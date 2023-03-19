@@ -1,7 +1,9 @@
 package com.example.hw3jpcompose
 
 import android.content.Intent
+import android.icu.text.CaseMap
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hw3jpcompose.ui.theme.HW3JPComposeTheme
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,19 +34,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
     Surface(modifier, color = MaterialTheme.colorScheme.background) {
-            Greetings()
+        NewsItem(modifier = Modifier.fillMaxSize(), names = listOf("Disco Elysium’s Collage Mode allows you to write new dialogue", "News 2", "News 3"))
         }
     }
 
-
 @Composable
-private fun Greetings(
+fun NewsItem(
     modifier: Modifier = Modifier,
-    names: List<String> = List(1000) { "$it" }
+    names: List<String>
 ) {
     LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
@@ -49,6 +52,8 @@ private fun Greetings(
         }
     }
 }
+
+
 
 @Composable
 private fun SeeDetails(name: String) {
@@ -74,11 +79,30 @@ private fun SeeDetails(name: String) {
     }
 }
 
+private fun getContentFromWeb(): FetchNewsResult {
+    return try {
+        val url = URL("https://www.engadget.com/rss.xml")
+        (url.openConnection() as HttpURLConnection).run {
+            requestMethod = "GET"
+            connectTimeout = 5000
+            readTimeout = 5000
+            String(inputStream.readBytes())
+        }.let { Success(it) }
+    } catch (ioException: IOException) {
+        Failed("Error while fetching news", ioException)
+    }
+}
+
+sealed class FetchNewsResult
+class Success(val result: String) : FetchNewsResult()
+class Failed(val text: String, val throwable: Throwable) : FetchNewsResult()
+
+
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun DefaultPreview() {
     HW3JPComposeTheme {
-        Greetings()
+        //NewsItem()
     }
 }
 

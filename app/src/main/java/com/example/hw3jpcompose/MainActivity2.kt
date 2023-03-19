@@ -1,15 +1,19 @@
 package com.example.hw3jpcompose
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.hw3jpcompose.ui.theme.HW3JPComposeTheme
 
 class MainActivity2 : ComponentActivity() {
@@ -17,12 +21,10 @@ class MainActivity2 : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HW3JPComposeTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    DetailedItem()
                 }
             }
         }
@@ -30,14 +32,26 @@ class MainActivity2 : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun DetailedItem() {
+    val mContext = LocalContext.current
+    Row(modifier = Modifier.padding(24.dp)) {
+
+            Button(
+                onClick = { mContext.startActivity(Intent(mContext, MainActivity::class.java)) }
+            ) {
+                Text(text = "Back")
+            }
+
+        Column {
+            Text(text = "Disco Elysium’s Collage Mode allows you to write new dialogue")
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview2() {
     HW3JPComposeTheme {
-        Greeting("Android")
+        DetailedItem()
     }
 }
