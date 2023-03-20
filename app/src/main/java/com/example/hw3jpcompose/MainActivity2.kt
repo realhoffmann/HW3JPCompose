@@ -43,7 +43,7 @@ fun DetailedItem() {
             }
 
         Column {
-            Text(text = "Disco Elysium’s Collage Mode allows you to write new dialogue")
+                Text(getNewsSingle("0"))
         }
     }
 }

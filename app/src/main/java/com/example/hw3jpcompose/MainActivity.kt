@@ -6,12 +6,15 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,7 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
     Surface(modifier, color = MaterialTheme.colorScheme.background) {
-        NewsItem(modifier = Modifier.fillMaxSize(), names = listOf("Disco Elysium’s Collage Mode allows you to write new dialogue", "News 2", "News 3"))
+        NewsItem(modifier = Modifier.fillMaxSize(), names = getNews())
         }
     }
 
@@ -65,13 +68,22 @@ private fun SeeDetails(name: String) {
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
         Row(modifier = Modifier.padding(24.dp)) {
-            Column(modifier = Modifier
-                .weight(1f)
+            Column(modifier = with(Modifier) {
+                weight(1f)
+                        .scrollable(orientation = Orientation.Vertical, state = rememberScrollState())
+            }
             ) {
                 Text(text = name)
             }
+
             ElevatedButton(
-                onClick = { mContext.startActivity(Intent(mContext, MainActivity2::class.java))}
+                onClick = {
+                    Intent(mContext, MainActivity2::class.java).apply {
+                        putExtra("newsItem",name)
+                    }
+                mContext.startActivity(Intent(mContext, MainActivity2::class.java))
+
+                }
             ) {
                 Text(text = "Details")
             }
@@ -79,30 +91,12 @@ private fun SeeDetails(name: String) {
     }
 }
 
-private fun getContentFromWeb(): FetchNewsResult {
-    return try {
-        val url = URL("https://www.engadget.com/rss.xml")
-        (url.openConnection() as HttpURLConnection).run {
-            requestMethod = "GET"
-            connectTimeout = 5000
-            readTimeout = 5000
-            String(inputStream.readBytes())
-        }.let { Success(it) }
-    } catch (ioException: IOException) {
-        Failed("Error while fetching news", ioException)
-    }
-}
-
-sealed class FetchNewsResult
-class Success(val result: String) : FetchNewsResult()
-class Failed(val text: String, val throwable: Throwable) : FetchNewsResult()
-
 
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun DefaultPreview() {
     HW3JPComposeTheme {
-        //NewsItem()
+
     }
 }
 
