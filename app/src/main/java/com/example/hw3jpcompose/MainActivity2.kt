@@ -41,7 +41,6 @@ fun DetailedItem() {
             ) {
                 Text(text = "Back")
             }
-
         Column {
                 Text(getNewsSingle("0"))
         }
